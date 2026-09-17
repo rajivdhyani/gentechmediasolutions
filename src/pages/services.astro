@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+
+const services = [
+	{
+		id: 'it',
+		eyebrow: 'IT Solutions',
+		title: 'Infrastructure and support that scales with you',
+		description:
+			'The technical foundation for a growing company: set up so it holds up as your team and your usage grow, with real support behind it instead of a ticket queue that goes nowhere.',
+		points: [
+			'Systems & infrastructure setup and migration',
+			'Ongoing technical support for growing teams',
+			'Tooling selection and workflow automation',
+			'Security and access basics done right from day one',
+		],
+	},
+	{
+		id: 'media',
+		eyebrow: 'Media Solutions',
+		title: 'Content and campaigns with a clear point of view',
+		description:
+			'Marketing and media work scoped to what an early-stage or growing company actually needs to launch, explain itself, and get in front of the right audience.',
+		points: [
+			'Brand positioning and messaging',
+			'Video and digital content production',
+			'Marketing campaign planning and execution',
+			'Social and digital platform management',
+		],
+	},
+	{
+		id: 'management',
+		eyebrow: 'Management Solutions',
+		title: 'Operational structure that keeps pace with growth',
+		description:
+			'Project and operations support for teams whose headcount and workload are growing faster than their process — so nothing important falls through the cracks.',
+		points: [
+			'Project and program management',
+			'Process design and documentation',
+			'Vendor and resource coordination',
+			'Operational reporting and check-ins',
+		],
+	},
+];
+---
+
+<Layout
+	title="Services"
+	description="IT, media, and management solutions for startups and growing companies from Gentech Media Solutions."
+>
+	<section class="mx-auto max-w-6xl px-6 py-20">
+		<p class="text-xs font-semibold tracking-wide text-amber-500 uppercase">Services</p>
+		<h1 class="mt-2 max-w-2xl font-display text-4xl font-semibold text-navy-950">
+			What we do, and how it fits together
+		</h1>
+		<p class="mt-4 max-w-2xl text-navy-700/80">
+			We lead with IT, because it's the foundation everything else runs on, and pair it with media and management
+			support so your systems, your story, and your operations move in the same direction.
+		</p>
+
+		<div class="mt-14 space-y-8">
+			{services.map((service) => (
+				<div class="grid gap-6 md:grid-cols-[1fr_2fr]">
+					<div id={service.id} class="scroll-mt-24">
+						<p class="text-xs font-semibold tracking-wide text-amber-500 uppercase">{service.eyebrow}</p>
+						<h2 class="mt-2 font-display text-2xl font-semibold text-navy-950">{service.title}</h2>
+					</div>
+					<div class="rounded-2xl border border-navy-900/10 bg-white p-8">
+						<p class="text-navy-700/80">{service.description}</p>
+						<ul class="mt-5 grid gap-2 sm:grid-cols-2">
+							{service.points.map((point) => (
+								<li class="flex items-start gap-2 text-sm text-navy-800">
+									<span class="mt-1 h-1.5 w-1.5 flex-none rounded-full bg-amber-500"></span>
+									{point}
+								</li>
+							))}
+						</ul>
+					</div>
+				</div>
+			))}
+		</div>
+
+		<div class="mt-16 rounded-2xl bg-mist-100 p-8 text-center">
+			<p class="font-display text-xl font-semibold text-navy-950">Not sure which of these you need?</p>
+			<p class="mx-auto mt-2 max-w-lg text-sm text-navy-700/80">
+				Most projects touch more than one of these. Tell us what you're working on and we'll help you figure out
+				where to start.
+			</p>
+			<a
+				href="/contact"
+				class="mt-6 inline-block rounded-full bg-navy-950 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-amber-500 hover:text-navy-950"
+			>
+				Talk to us
+			</a>
+		</div>
+	</section>
+</Layout>

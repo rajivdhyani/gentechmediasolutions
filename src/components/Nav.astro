@@ -1,0 +1,50 @@
+---
+const links = [
+	{ href: '/', label: 'Home' },
+	{ href: '/services', label: 'Services' },
+	{ href: '/about', label: 'About' },
+	{ href: '/contact', label: 'Contact' },
+];
+const current = new URL(Astro.request.url).pathname;
+---
+
+<header class="sticky top-0 z-50 border-b border-navy-900/5 bg-mist-50/90 backdrop-blur">
+	<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+		<a href="/" class="font-display text-lg font-semibold tracking-tight text-navy-950">
+			Gentech <span class="text-amber-500">Media</span> Solutions
+		</a>
+		<nav class="hidden items-center gap-8 md:flex">
+			{links.map((link) => (
+				<a
+					href={link.href}
+					class={`text-sm font-medium transition-colors hover:text-amber-500 ${
+						current === link.href ? 'text-navy-950' : 'text-navy-700/70'
+					}`}
+				>
+					{link.label}
+				</a>
+			))}
+		</nav>
+		<a
+			href="/contact"
+			class="hidden rounded-full bg-navy-950 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-500 hover:text-navy-950 md:inline-block"
+		>
+			Start a project
+		</a>
+		<details class="md:hidden">
+			<summary class="cursor-pointer list-none rounded-full border border-navy-900/10 px-3 py-2 text-sm font-medium text-navy-950">
+				Menu
+			</summary>
+			<nav class="absolute inset-x-0 top-full flex flex-col gap-1 border-b border-navy-900/5 bg-mist-50 px-6 py-4 shadow-sm">
+				{links.map((link) => (
+					<a href={link.href} class="rounded-lg px-3 py-2 text-sm font-medium text-navy-800 hover:bg-navy-900/5">
+						{link.label}
+					</a>
+				))}
+				<a href="/contact" class="mt-2 rounded-full bg-navy-950 px-4 py-2.5 text-center text-sm font-semibold text-white">
+					Start a project
+				</a>
+			</nav>
+		</details>
+	</div>
+</header>

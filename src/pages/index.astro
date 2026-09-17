@@ -1,0 +1,133 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+
+const services = [
+	{
+		id: 'it',
+		eyebrow: 'IT Solutions',
+		title: 'Infrastructure that scales with you',
+		description:
+			'Systems, tooling, and support that keep a growing team productive — set up right the first time so you are not re-platforming every six months.',
+		points: ['Systems & infrastructure setup', 'Ongoing technical support', 'Tooling and workflow automation'],
+	},
+	{
+		id: 'media',
+		eyebrow: 'Media Solutions',
+		title: 'Content and campaigns with a point of view',
+		description:
+			'Marketing and media work built around what a startup actually needs to launch and grow — not agency theater.',
+		points: ['Brand & content strategy', 'Video and digital content production', 'Campaign planning & execution'],
+	},
+	{
+		id: 'management',
+		eyebrow: 'Management Solutions',
+		title: 'Operational support for growing teams',
+		description:
+			'Project and operations help for teams that are scaling faster than their process — so growth does not outrun structure.',
+		points: ['Project & operations management', 'Process design and documentation', 'Vendor & resource coordination'],
+	},
+];
+---
+
+<Layout
+	title="Gentech Media Solutions"
+	description="IT, media, and management solutions for startups and growing companies — one partner instead of three vendors."
+>
+	<section class="relative overflow-hidden bg-navy-950">
+		<div class="pointer-events-none absolute inset-0 opacity-40" aria-hidden="true">
+			<div class="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-amber-500/20 blur-3xl"></div>
+			<div class="absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-navy-600/40 blur-3xl"></div>
+		</div>
+		<div class="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
+			<p class="text-sm font-semibold tracking-wide text-amber-400 uppercase">For startups & growing companies</p>
+			<h1 class="mt-4 max-w-3xl font-display text-4xl font-semibold leading-tight text-white md:text-6xl">
+				IT, media, and management — under one roof.
+			</h1>
+			<p class="mt-6 max-w-2xl text-lg leading-relaxed text-mist-200/80">
+				Most growing companies end up juggling separate vendors for their tech, their marketing, and their operations.
+				Gentech Media Solutions brings all three together, so your systems, your story, and your day-to-day actually
+				stay in sync.
+			</p>
+			<div class="mt-10 flex flex-wrap gap-4">
+				<a
+					href="/contact"
+					class="rounded-full bg-amber-500 px-7 py-3.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-amber-400"
+				>
+					Start a conversation
+				</a>
+				<a
+					href="/services"
+					class="rounded-full border border-white/20 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/40"
+				>
+					Explore services
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="mx-auto max-w-6xl px-6 py-20">
+		<div class="max-w-2xl">
+			<p class="text-xs font-semibold tracking-wide text-amber-500 uppercase">What we do</p>
+			<h2 class="mt-2 font-display text-3xl font-semibold text-navy-950">Three disciplines, one team</h2>
+			<p class="mt-4 text-navy-700/80">
+				We lead with IT — it's the foundation everything else runs on — and pair it with media and management support
+				so you are not stitching together separate vendors who don't talk to each other.
+			</p>
+		</div>
+		<div class="mt-12 grid gap-6 md:grid-cols-3">
+			{services.map((service) => (
+				<ServiceCard {...service} />
+			))}
+		</div>
+	</section>
+
+	<section class="bg-mist-100">
+		<div class="mx-auto max-w-6xl px-6 py-20">
+			<div class="grid gap-12 md:grid-cols-2 md:items-center">
+				<div>
+					<p class="text-xs font-semibold tracking-wide text-amber-500 uppercase">Why Gentech</p>
+					<h2 class="mt-2 font-display text-3xl font-semibold text-navy-950">
+						Built for companies that are still figuring it out
+					</h2>
+					<p class="mt-4 text-navy-700/80">
+						Early-stage and growing companies rarely need a massive agency retainer or an in-house department for
+						every function. They need a partner who can move across IT, media, and operations without losing
+						context between hand-offs. That's the gap we work in.
+					</p>
+				</div>
+				<div class="grid gap-4">
+					<div class="rounded-2xl border border-navy-900/10 bg-white p-6">
+						<p class="font-display text-lg font-semibold text-navy-950">One point of contact</p>
+						<p class="mt-2 text-sm text-navy-700/80">
+							Instead of coordinating between an IT vendor, a marketing agency, and an ops consultant, you work with
+							one team that understands the whole picture.
+						</p>
+					</div>
+					<div class="rounded-2xl border border-navy-900/10 bg-white p-6">
+						<p class="font-display text-lg font-semibold text-navy-950">Right-sized engagements</p>
+						<p class="mt-2 text-sm text-navy-700/80">
+							We scope work to where you actually are — not a one-size-fits-all package built for a company five
+							times your size.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="mx-auto max-w-6xl px-6 py-20">
+		<div class="rounded-3xl bg-navy-950 px-8 py-14 text-center md:px-16">
+			<h2 class="font-display text-3xl font-semibold text-white md:text-4xl">Have a project in mind?</h2>
+			<p class="mx-auto mt-4 max-w-xl text-mist-200/80">
+				Tell us what you're building and where you're stuck. We'll tell you honestly whether we're a fit.
+			</p>
+			<a
+				href="/contact"
+				class="mt-8 inline-block rounded-full bg-amber-500 px-7 py-3.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-amber-400"
+			>
+				Get in touch
+			</a>
+		</div>
+	</section>
+</Layout>
