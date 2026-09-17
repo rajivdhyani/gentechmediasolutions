@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS contacts (
 	email TEXT NOT NULL,
 	topic TEXT NOT NULL,
 	message TEXT NOT NULL,
+	status TEXT NOT NULL DEFAULT 'new',
 	created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

@@ -1,0 +1,264 @@
+---
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<title>Admin — Gentech Media Solutions</title>
+	</head>
+	<body class="min-h-screen bg-mist-50 antialiased">
+		<header class="border-b border-navy-900/5 bg-white">
+			<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+				<div>
+					<p class="font-display text-lg font-semibold text-navy-950">
+						Gentech <span class="text-amber-500">Admin</span>
+					</p>
+					<p class="text-xs text-navy-700/60">Enquiries and questionnaire responses</p>
+				</div>
+				<p id="admin-email" class="text-xs font-medium text-navy-700/70"></p>
+			</div>
+		</header>
+
+		<main class="mx-auto max-w-6xl px-6 py-10">
+			<div id="admin-loading" class="rounded-2xl border border-navy-900/10 bg-white p-8 text-sm text-navy-700/70">
+				Loading…
+			</div>
+
+			<div id="admin-error" class="hidden rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700"></div>
+
+			<div id="admin-content" class="hidden">
+				<section id="admin-stats" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"></section>
+
+				<section class="mt-10">
+					<div class="flex flex-wrap items-center justify-between gap-3">
+						<h2 class="font-display text-xl font-semibold text-navy-950">Submissions</h2>
+						<div class="flex gap-1 rounded-full bg-navy-900/5 p-1">
+							<button data-filter="all" class="filter-btn rounded-full px-3 py-1.5 text-xs font-medium">All</button>
+							<button data-filter="new" class="filter-btn rounded-full px-3 py-1.5 text-xs font-medium">New</button>
+							<button data-filter="contacted" class="filter-btn rounded-full px-3 py-1.5 text-xs font-medium">Contacted</button>
+							<button data-filter="closed" class="filter-btn rounded-full px-3 py-1.5 text-xs font-medium">Closed</button>
+						</div>
+					</div>
+
+					<div id="admin-list" class="mt-5 space-y-3"></div>
+					<p id="admin-empty" class="hidden rounded-2xl border border-navy-900/10 bg-white p-8 text-center text-sm text-navy-700/70">
+						Nothing here yet.
+					</p>
+				</section>
+
+				<section id="admin-unlinked-section" class="mt-12 hidden">
+					<h2 class="font-display text-xl font-semibold text-navy-950">
+						Questionnaires without a message
+					</h2>
+					<p class="mt-1 text-sm text-navy-700/70">
+						Someone completed the questionnaire directly without sending a contact message.
+					</p>
+					<div id="admin-unlinked" class="mt-5 space-y-3"></div>
+				</section>
+			</div>
+		</main>
+
+		<script>
+			const STATUS_STYLES = {
+				new: 'bg-amber-500/15 text-amber-700',
+				contacted: 'bg-blue-500/15 text-blue-700',
+				closed: 'bg-navy-900/10 text-navy-700',
+			};
+
+			let submissions = [];
+			let activeFilter = 'all';
+
+			const el = (id) => document.getElementById(id);
+			const escapeHtml = (value) =>
+				String(value).replace(/[&<>"']/g, (c) =>
+					({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+				);
+
+			function formatDate(value) {
+				const date = new Date(value.replace(' ', 'T') + 'Z');
+				return Number.isNaN(date.getTime())
+					? value
+					: date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+			}
+
+			function statTile(label, value) {
+				return `<div class="rounded-2xl border border-navy-900/10 bg-white p-5">
+					<p class="text-xs font-medium tracking-wide text-navy-700/60 uppercase">${escapeHtml(label)}</p>
+					<p class="mt-1 font-display text-2xl font-semibold text-navy-950">${escapeHtml(value)}</p>
+				</div>`;
+			}
+
+			function renderStats() {
+				const byTopic = {};
+				let newCount = 0;
+				let withQuestionnaire = 0;
+				for (const s of submissions) {
+					byTopic[s.topic] = (byTopic[s.topic] ?? 0) + 1;
+					if (s.status === 'new') newCount += 1;
+					if (s.questionnaire) withQuestionnaire += 1;
+				}
+				const topTopic = Object.entries(byTopic).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—';
+				el('admin-stats').innerHTML = [
+					statTile('Total enquiries', submissions.length),
+					statTile('New', newCount),
+					statTile('Completed questionnaire', withQuestionnaire),
+					statTile('Most requested', topTopic),
+				].join('');
+			}
+
+			function renderAnswers(questionnaire) {
+				if (!questionnaire) {
+					return `<p class="mt-4 text-sm text-navy-700/60">No questionnaire completed.</p>`;
+				}
+				const rows = Object.entries(questionnaire.answers)
+					.map(([key, value]) => {
+						const label = key.replace(/_/g, ' ');
+						const answer = Array.isArray(value) ? value.join(', ') : value;
+						return `<div class="flex flex-col gap-0.5 border-t border-navy-900/5 py-2 sm:flex-row sm:gap-4">
+							<span class="w-48 flex-none text-xs font-medium tracking-wide text-navy-700/60 uppercase">${escapeHtml(label)}</span>
+							<span class="text-sm text-navy-900">${escapeHtml(answer || '—')}</span>
+						</div>`;
+					})
+					.join('');
+				return `<div class="mt-4">
+					<p class="text-xs font-semibold tracking-wide text-amber-600 uppercase">
+						Questionnaire · ${escapeHtml(questionnaire.section)}
+					</p>
+					<div class="mt-2">${rows}</div>
+				</div>`;
+			}
+
+			function renderList() {
+				const list = el('admin-list');
+				const visible =
+					activeFilter === 'all'
+						? submissions
+						: submissions.filter((s) => s.status === activeFilter);
+
+				el('admin-empty').classList.toggle('hidden', visible.length > 0);
+
+				list.innerHTML = visible
+					.map(
+						(s) => `<details class="group rounded-2xl border border-navy-900/10 bg-white">
+						<summary class="flex cursor-pointer flex-wrap items-center gap-3 p-5">
+							<span class="rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_STYLES[s.status] ?? ''}">${escapeHtml(s.status)}</span>
+							<span class="font-display font-semibold text-navy-950">${escapeHtml(s.name)}</span>
+							<span class="text-sm text-navy-700/70">${escapeHtml(s.topic)}</span>
+							${s.questionnaire ? '<span class="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs text-amber-700">+ questionnaire</span>' : ''}
+							<span class="ml-auto text-xs text-navy-700/50">${escapeHtml(formatDate(s.created_at))}</span>
+						</summary>
+						<div class="border-t border-navy-900/5 px-5 pt-4 pb-5">
+							<a href="mailto:${escapeHtml(s.email)}" class="text-sm font-medium text-amber-600 hover:underline">${escapeHtml(s.email)}</a>
+							<p class="mt-3 text-sm whitespace-pre-wrap text-navy-900">${escapeHtml(s.message)}</p>
+							${renderAnswers(s.questionnaire)}
+							<div class="mt-5 flex items-center gap-2">
+								<span class="text-xs font-medium text-navy-700/60">Mark as</span>
+								${['new', 'contacted', 'closed']
+									.map(
+										(status) =>
+											`<button data-id="${s.id}" data-status="${status}" class="status-btn rounded-full border border-navy-900/15 px-3 py-1.5 text-xs font-medium ${
+												s.status === status ? 'bg-navy-950 text-white' : 'text-navy-800 hover:border-navy-900/30'
+											}">${status}</button>`
+									)
+									.join('')}
+							</div>
+						</div>
+					</details>`
+					)
+					.join('');
+			}
+
+			function renderUnlinked(responses) {
+				if (!responses.length) return;
+				el('admin-unlinked-section').classList.remove('hidden');
+				el('admin-unlinked').innerHTML = responses
+					.map(
+						(r) => `<details class="rounded-2xl border border-navy-900/10 bg-white">
+						<summary class="flex cursor-pointer items-center gap-3 p-5">
+							<span class="font-display font-semibold text-navy-950">${escapeHtml(r.section)}</span>
+							<span class="ml-auto text-xs text-navy-700/50">${escapeHtml(formatDate(r.created_at))}</span>
+						</summary>
+						<div class="border-t border-navy-900/5 px-5 pt-1 pb-5">${renderAnswers(r)}</div>
+					</details>`
+					)
+					.join('');
+			}
+
+			function syncFilterButtons() {
+				document.querySelectorAll('.filter-btn').forEach((btn) => {
+					const active = btn.dataset.filter === activeFilter;
+					btn.className = `filter-btn rounded-full px-3 py-1.5 text-xs font-medium ${
+						active ? 'bg-white text-navy-950 shadow-sm' : 'text-navy-700/70 hover:text-navy-950'
+					}`;
+				});
+			}
+
+			async function updateStatus(id, status) {
+				const res = await fetch('/admin/api/submissions', {
+					method: 'PATCH',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ id: Number(id), status }),
+				});
+				if (!res.ok) return;
+				const target = submissions.find((s) => s.id === Number(id));
+				if (target) target.status = status;
+				renderStats();
+				renderList();
+			}
+
+			document.addEventListener('click', (e) => {
+				const filterBtn = e.target.closest('.filter-btn');
+				if (filterBtn) {
+					activeFilter = filterBtn.dataset.filter;
+					syncFilterButtons();
+					renderList();
+					return;
+				}
+				const statusBtn = e.target.closest('.status-btn');
+				if (statusBtn) {
+					e.preventDefault();
+					updateStatus(statusBtn.dataset.id, statusBtn.dataset.status);
+				}
+			});
+
+			async function load() {
+				try {
+					const res = await fetch('/admin/api/submissions');
+					if (!res.ok) {
+						throw new Error(
+							res.status === 503
+								? 'Admin access is not configured yet. Set up the Cloudflare Access application and the ACCESS_TEAM_DOMAIN / ACCESS_AUD variables.'
+								: `Could not load submissions (${res.status}).`
+						);
+					}
+					const payload = await res.json();
+					submissions = payload.submissions;
+					el('admin-email').textContent = payload.adminEmail ?? '';
+					renderStats();
+					syncFilterButtons();
+					renderList();
+					renderUnlinked(payload.unlinkedResponses);
+					el('admin-loading').classList.add('hidden');
+					el('admin-content').classList.remove('hidden');
+				} catch (err) {
+					el('admin-loading').classList.add('hidden');
+					el('admin-error').textContent = err.message;
+					el('admin-error').classList.remove('hidden');
+				}
+			}
+
+			load();
+		</script>
+	</body>
+</html>
