@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { sectionFromTopic } from '../data/questionnaire.js';
 ---
 
 <Layout
@@ -15,16 +16,32 @@ import Layout from '../layouts/Layout.astro';
 		</p>
 
 		<div class="mt-12 grid gap-10 md:grid-cols-[3fr_2fr]">
-			<form
-				action="https://formsubmit.co/hr@gentechmediasolutions.com"
-				method="POST"
-				class="space-y-5 rounded-2xl border border-navy-900/10 bg-white p-8"
-			>
-				<input type="hidden" name="_subject" value="New inquiry from gentechmediasolutions.com" />
-				<input type="hidden" name="_captcha" value="true" />
-				<input type="hidden" name="_next" value="https://gentechmediasolutions.com/contact?sent=true" />
-				<input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off" />
+			<div id="contact-success" class="hidden rounded-2xl border border-navy-900/10 bg-white p-8 text-center">
+				<h2 class="font-display text-xl font-semibold text-navy-950">Message sent — thank you.</h2>
+				<p class="mt-2 text-sm text-navy-700/80">
+					We'll reply by email within one to two business days. Want to help us prepare? A couple
+					quick questions about your project takes two minutes.
+				</p>
+				<div class="mt-6 flex flex-wrap justify-center gap-3">
+					<a
+						id="contact-questionnaire-link"
+						href="/questionnaire"
+						class="rounded-full bg-navy-950 px-6 py-2.5 text-sm font-semibold text-white hover:bg-amber-500 hover:text-navy-950"
+					>
+						Tell us more
+					</a>
+					<a
+						href="/"
+						class="rounded-full border border-navy-900/15 px-6 py-2.5 text-sm font-medium text-navy-700/70 hover:text-navy-950"
+					>
+						I'm done, thanks
+					</a>
+				</div>
+			</div>
 
+			<div id="contact-error" class="hidden rounded-xl bg-red-50 p-4 text-sm text-red-700"></div>
+
+			<form id="contact-form" class="space-y-5 rounded-2xl border border-navy-900/10 bg-white p-8">
 				<div class="grid gap-5 sm:grid-cols-2">
 					<div>
 						<label for="name" class="text-sm font-medium text-navy-800">Name</label>
@@ -75,6 +92,7 @@ import Layout from '../layouts/Layout.astro';
 
 				<button
 					type="submit"
+					id="contact-submit"
 					class="w-full rounded-full bg-navy-950 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-amber-500 hover:text-navy-950"
 				>
 					Send message
@@ -95,4 +113,49 @@ import Layout from '../layouts/Layout.astro';
 			</div>
 		</div>
 	</section>
+
+	<script>
+		const form = document.getElementById('contact-form');
+		const submitBtn = document.getElementById('contact-submit');
+		const successEl = document.getElementById('contact-success');
+		const errorEl = document.getElementById('contact-error');
+		const questionnaireLink = document.getElementById('contact-questionnaire-link');
+
+		const TOPIC_TO_SECTION = {
+			'IT Solutions': 'it',
+			'Media Solutions': 'media',
+			'Management Solutions': 'management',
+			'Not sure yet': 'general',
+		};
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			submitBtn.disabled = true;
+			submitBtn.textContent = 'Sending…';
+			errorEl.classList.add('hidden');
+
+			const data = Object.fromEntries(new FormData(form).entries());
+
+			try {
+				const res = await fetch('/api/contact', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(data),
+				});
+				if (!res.ok) throw new Error('Request failed');
+				const { contactId } = await res.json();
+
+				const section = TOPIC_TO_SECTION[data.topic] ?? 'general';
+				questionnaireLink.href = `/questionnaire?section=${section}&contact=${contactId}`;
+
+				form.classList.add('hidden');
+				successEl.classList.remove('hidden');
+			} catch {
+				errorEl.textContent = 'Something went wrong sending your message. Please try again, or email us directly.';
+				errorEl.classList.remove('hidden');
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Send message';
+			}
+		});
+	</script>
 </Layout>
