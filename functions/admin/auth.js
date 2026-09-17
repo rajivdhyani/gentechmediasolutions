@@ -65,6 +65,13 @@ export async function verifyPassword(password, stored) {
 	return constantTimeEqual(derived, expected);
 }
 
+// The password set through the browser setup page lives in D1; ADMIN_PASSWORD_HASH
+// remains supported so the secret can still be used instead.
+export async function storedPasswordHash(env) {
+	const row = await env.DB.prepare('SELECT password_hash FROM admin_credentials WHERE id = 1').first();
+	return row?.password_hash ?? env.ADMIN_PASSWORD_HASH ?? null;
+}
+
 export async function hashToken(token) {
 	const digest = await crypto.subtle.digest('SHA-256', encoder.encode(token));
 	return toBase64(new Uint8Array(digest));

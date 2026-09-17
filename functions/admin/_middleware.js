@@ -1,7 +1,15 @@
-import { SESSION_COOKIE, hashToken, readCookie } from './auth.js';
+import { SESSION_COOKIE, hashToken, readCookie, storedPasswordHash } from './auth.js';
 
-// Paths that must stay reachable without a session, or nobody could ever log in.
-const PUBLIC_PATHS = new Set(['/admin/login', '/admin/login/', '/admin/api/login']);
+// Paths that must stay reachable without a session, or nobody could ever log in
+// or complete first-time setup. The setup endpoint guards itself.
+const PUBLIC_PATHS = new Set([
+	'/admin/login',
+	'/admin/login/',
+	'/admin/api/login',
+	'/admin/setup',
+	'/admin/setup/',
+	'/admin/api/setup',
+]);
 
 export async function onRequest(context) {
 	const { request, env, next } = context;
@@ -9,9 +17,9 @@ export async function onRequest(context) {
 
 	if (PUBLIC_PATHS.has(pathname)) return next();
 
-	if (!env.ADMIN_PASSWORD_HASH) {
+	if (!(await storedPasswordHash(env))) {
 		return new Response(
-			'Admin area is not configured yet. Set the ADMIN_PASSWORD_HASH secret on this Pages project.',
+			'Admin area is not configured yet. Open /admin/setup with your setup link to choose a password.',
 			{ status: 503, headers: { 'content-type': 'text/plain' } }
 		);
 	}

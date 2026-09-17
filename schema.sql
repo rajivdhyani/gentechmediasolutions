@@ -27,6 +27,12 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
 	expires_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS admin_credentials (
+	id INTEGER PRIMARY KEY CHECK (id = 1),
+	password_hash TEXT NOT NULL,
+	updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS login_attempts (
 	ip TEXT PRIMARY KEY,
 	failures INTEGER NOT NULL DEFAULT 0,

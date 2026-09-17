@@ -4,6 +4,7 @@ import {
 	hashToken,
 	readCookie,
 	sessionCookie,
+	storedPasswordHash,
 	verifyPassword,
 } from '../auth.js';
 
@@ -46,7 +47,8 @@ async function recordFailure(db, ip) {
 }
 
 export async function onRequestPost({ request, env }) {
-	if (!env.ADMIN_PASSWORD_HASH) {
+	const passwordHash = await storedPasswordHash(env);
+	if (!passwordHash) {
 		return json({ error: 'Admin password is not configured.' }, 503);
 	}
 
@@ -64,7 +66,7 @@ export async function onRequestPost({ request, env }) {
 	}
 
 	const password = String(body.password ?? '');
-	const ok = password.length > 0 && (await verifyPassword(password, env.ADMIN_PASSWORD_HASH));
+	const ok = password.length > 0 && (await verifyPassword(password, passwordHash));
 
 	if (!ok) {
 		await recordFailure(env.DB, ip);

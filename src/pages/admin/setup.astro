@@ -1,0 +1,155 @@
+---
+import '../../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<title>Set admin password — Gentech Media Solutions</title>
+	</head>
+	<body class="flex min-h-screen items-center justify-center bg-navy-950 px-6 py-12 antialiased">
+		<div class="w-full max-w-sm">
+			<p class="text-center font-display text-lg font-semibold text-white">
+				Gentech <span class="text-amber-400">Admin</span>
+			</p>
+
+			<div id="setup-closed" class="mt-8 hidden rounded-2xl bg-white p-8 text-center">
+				<h1 class="font-display text-lg font-semibold text-navy-950">Setup is already complete</h1>
+				<p class="mt-2 text-sm text-navy-700/80">
+					An admin password has already been set, so this page is closed.
+				</p>
+				<a
+					href="/admin/login"
+					class="mt-5 inline-block rounded-full bg-navy-950 px-6 py-2.5 text-sm font-semibold text-white hover:bg-amber-500 hover:text-navy-950"
+				>
+					Go to sign in
+				</a>
+			</div>
+
+			<div id="setup-done" class="mt-8 hidden rounded-2xl bg-white p-8 text-center">
+				<h1 class="font-display text-lg font-semibold text-navy-950">Password set</h1>
+				<p class="mt-2 text-sm text-navy-700/80">You can now sign in to the admin panel.</p>
+				<a
+					href="/admin/login"
+					class="mt-5 inline-block rounded-full bg-navy-950 px-6 py-2.5 text-sm font-semibold text-white hover:bg-amber-500 hover:text-navy-950"
+				>
+					Sign in
+				</a>
+			</div>
+
+			<form id="setup-form" class="mt-8 hidden rounded-2xl bg-white p-8">
+				<h1 class="font-display text-lg font-semibold text-navy-950">Choose your admin password</h1>
+				<p class="mt-1 text-sm text-navy-700/80">
+					This is a one-time setup. Pick something strong and store it in a password manager —
+					it cannot be recovered, only reset.
+				</p>
+
+				<label for="password" class="mt-5 block text-sm font-medium text-navy-800">
+					New password
+				</label>
+				<input
+					id="password"
+					type="password"
+					required
+					minlength="12"
+					autocomplete="new-password"
+					class="mt-1.5 w-full rounded-lg border border-navy-900/15 px-3.5 py-2.5 text-sm text-navy-950 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+				/>
+
+				<label for="confirm" class="mt-4 block text-sm font-medium text-navy-800">
+					Confirm password
+				</label>
+				<input
+					id="confirm"
+					type="password"
+					required
+					minlength="12"
+					autocomplete="new-password"
+					class="mt-1.5 w-full rounded-lg border border-navy-900/15 px-3.5 py-2.5 text-sm text-navy-950 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+				/>
+
+				<p class="mt-2 text-xs text-navy-700/60">At least 12 characters.</p>
+
+				<p id="setup-error" class="mt-3 hidden rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"></p>
+
+				<button
+					type="submit"
+					id="setup-submit"
+					class="mt-5 w-full rounded-full bg-navy-950 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-amber-500 hover:text-navy-950"
+				>
+					Set password
+				</button>
+			</form>
+		</div>
+
+		<script>
+			const el = (id) => document.getElementById(id);
+			const token = new URLSearchParams(location.search).get('token') ?? '';
+
+			const form = el('setup-form');
+			const errorEl = el('setup-error');
+			const submitBtn = el('setup-submit');
+
+			(async () => {
+				try {
+					const res = await fetch('/admin/api/setup');
+					const { available } = await res.json();
+					el(available ? 'setup-form' : 'setup-closed').classList.remove('hidden');
+				} catch {
+					el('setup-closed').classList.remove('hidden');
+				}
+			})();
+
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const password = el('password').value;
+				const confirm = el('confirm').value;
+
+				errorEl.classList.add('hidden');
+
+				if (password !== confirm) {
+					errorEl.textContent = 'Passwords do not match.';
+					errorEl.classList.remove('hidden');
+					return;
+				}
+
+				submitBtn.disabled = true;
+				submitBtn.textContent = 'Setting…';
+
+				try {
+					const res = await fetch('/admin/api/setup', {
+						method: 'POST',
+						headers: { 'content-type': 'application/json' },
+						body: JSON.stringify({ token, password }),
+					});
+
+					if (res.ok) {
+						form.classList.add('hidden');
+						el('setup-done').classList.remove('hidden');
+						return;
+					}
+
+					const payload = await res.json().catch(() => ({}));
+					errorEl.textContent = payload.error ?? 'Could not set the password.';
+					errorEl.classList.remove('hidden');
+				} catch {
+					errorEl.textContent = 'Could not reach the server. Please try again.';
+					errorEl.classList.remove('hidden');
+				}
+
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Set password';
+			});
+		</script>
+	</body>
+</html>
