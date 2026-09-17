@@ -26,7 +26,12 @@ import '../styles/global.css';
 					</p>
 					<p class="text-xs text-navy-700/60">Enquiries and questionnaire responses</p>
 				</div>
-				<p id="admin-email" class="text-xs font-medium text-navy-700/70"></p>
+				<button
+					id="admin-signout"
+					class="rounded-full border border-navy-900/15 px-4 py-2 text-xs font-medium text-navy-800 hover:border-navy-900/30"
+				>
+					Sign out
+				</button>
 			</div>
 		</header>
 
@@ -232,19 +237,27 @@ import '../styles/global.css';
 				}
 			});
 
+			el('admin-signout').addEventListener('click', async () => {
+				await fetch('/admin/api/login', { method: 'DELETE' });
+				window.location.href = '/admin/login';
+			});
+
 			async function load() {
 				try {
 					const res = await fetch('/admin/api/submissions');
+					if (res.status === 401) {
+						window.location.href = '/admin/login';
+						return;
+					}
 					if (!res.ok) {
 						throw new Error(
 							res.status === 503
-								? 'Admin access is not configured yet. Set up the Cloudflare Access application and the ACCESS_TEAM_DOMAIN / ACCESS_AUD variables.'
+								? 'Admin password is not configured yet. Set the ADMIN_PASSWORD_HASH secret on this Pages project.'
 								: `Could not load submissions (${res.status}).`
 						);
 					}
 					const payload = await res.json();
 					submissions = payload.submissions;
-					el('admin-email').textContent = payload.adminEmail ?? '';
 					renderStats();
 					syncFilterButtons();
 					renderList();

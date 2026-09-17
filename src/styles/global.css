@@ -20,14 +20,18 @@
   --color-mist-200: #dfe4ed;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* Layered so page-level utilities like `bg-navy-950` on <body> can still win —
+   unlayered rules beat Tailwind's layered utilities whatever the specificity. */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
-body {
-  background-color: var(--color-mist-50);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
+  body {
+    background-color: var(--color-mist-50);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
 }
 
 .font-display {

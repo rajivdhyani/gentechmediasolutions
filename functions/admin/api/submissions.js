@@ -7,7 +7,7 @@ function json(data, status = 200) {
 	});
 }
 
-export async function onRequestGet({ env, data }) {
+export async function onRequestGet({ env }) {
 	const { results: contacts } = await env.DB.prepare(
 		`SELECT id, name, email, topic, message, status, created_at
 		 FROM contacts ORDER BY created_at DESC, id DESC`
@@ -36,11 +36,7 @@ export async function onRequestGet({ env, data }) {
 		questionnaire: byContact.get(contact.id) ?? null,
 	}));
 
-	return json({
-		adminEmail: data.adminEmail,
-		submissions,
-		unlinkedResponses: unlinked,
-	});
+	return json({ submissions, unlinkedResponses: unlinked });
 }
 
 export async function onRequestPatch({ request, env }) {
