@@ -1,0 +1,90 @@
+---
+interface Props {
+	class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<!-- Drawn for the dark hero: three service panels feeding one shared hub,
+	 which is the argument the headline is making. -->
+<svg
+	viewBox="0 0 420 330"
+	fill="none"
+	xmlns="http://www.w3.org/2000/svg"
+	class={className}
+	role="img"
+	aria-label="Infrastructure, media and operations panels connected to a single shared workspace"
+>
+	<ellipse cx="210" cy="306" rx="150" ry="14" fill="#16213a" />
+
+	<path
+		d="M96 150v34c0 8 6 14 14 14h90M324 150v34c0 8-6 14-14 14h-90M210 132v66"
+		stroke="#2b3b60"
+		stroke-width="2.5"
+		stroke-linecap="round"
+		stroke-dasharray="6 7"
+	/>
+
+	<!-- IT panel -->
+	<rect x="46" y="60" width="100" height="90" rx="12" fill="#16213a" />
+	<rect x="58" y="74" width="34" height="6" rx="3" fill="#f5a524" />
+	<rect x="58" y="90" width="76" height="13" rx="4" fill="#243354" />
+	<circle cx="124" cy="96.5" r="3.5" fill="#f5a524" />
+	<rect x="64" y="94" width="20" height="5" rx="2.5" fill="#4c5c7f" />
+	<rect x="58" y="109" width="76" height="13" rx="4" fill="#243354" />
+	<circle cx="124" cy="115.5" r="3.5" fill="#5f7099" />
+	<rect x="64" y="113" width="14" height="5" rx="2.5" fill="#4c5c7f" />
+	<rect x="58" y="128" width="50" height="13" rx="4" fill="#243354" />
+	<rect x="64" y="132" width="24" height="5" rx="2.5" fill="#4c5c7f" />
+
+	<!-- Media panel -->
+	<rect x="160" y="34" width="100" height="98" rx="12" fill="#1c2a49" />
+	<rect x="172" y="48" width="76" height="44" rx="8" fill="#0f1729" />
+	<circle cx="210" cy="70" r="14" fill="#f5a524" />
+	<path d="M206 63.5 216.5 70 206 76.5z" fill="#0f1729" />
+	<rect x="172" y="102" width="30" height="5" rx="2.5" fill="#4c5c7f" />
+	<rect x="172" y="114" width="60" height="5" rx="2.5" fill="#2f4066" />
+	<rect x="238" y="100" width="10" height="20" rx="5" fill="#2f4066" />
+
+	<!-- Management panel -->
+	<rect x="274" y="60" width="100" height="90" rx="12" fill="#16213a" />
+	<rect x="286" y="74" width="24" height="5" rx="2.5" fill="#f5a524" />
+	<rect x="286" y="88" width="24" height="18" rx="5" fill="#243354" />
+	<rect x="318" y="88" width="24" height="18" rx="5" fill="#2f4066" />
+	<rect x="350" y="88" width="12" height="18" rx="5" fill="#243354" />
+	<rect x="286" y="114" width="24" height="18" rx="5" fill="#2f4066" />
+	<rect x="318" y="114" width="24" height="18" rx="5" fill="#243354" />
+	<path
+		d="M322.5 122.5 326.5 126.5 337 116"
+		stroke="#f5a524"
+		stroke-width="2.5"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	/>
+
+	<!-- Shared workspace -->
+	<rect x="110" y="198" width="200" height="86" rx="14" fill="#f2f5fa" />
+	<rect x="110" y="198" width="200" height="22" rx="14" fill="#dfe4ed" />
+	<rect x="110" y="210" width="200" height="10" fill="#dfe4ed" />
+	<circle cx="126" cy="209" r="4" fill="#f5a524" />
+	<circle cx="140" cy="209" r="4" fill="#c3d2e8" />
+	<circle cx="154" cy="209" r="4" fill="#c3d2e8" />
+
+	<rect x="126" y="234" width="58" height="34" rx="6" fill="#dfe4ed" />
+	<rect x="134" y="252" width="8" height="10" rx="2" fill="#2b3b60" />
+	<rect x="146" y="245" width="8" height="17" rx="2" fill="#2b3b60" />
+	<rect x="158" y="240" width="8" height="22" rx="2" fill="#f5a524" />
+	<rect x="170" y="249" width="8" height="13" rx="2" fill="#2b3b60" />
+
+	<rect x="196" y="234" width="112" height="34" rx="6" fill="#dfe4ed" />
+	<path
+		d="M204 258c10 0 14-14 24-14s14 10 24 10 14-12 24-12 14 6 24 6"
+		stroke="#2b3b60"
+		stroke-width="2.5"
+		stroke-linecap="round"
+	/>
+
+	<rect x="180" y="284" width="60" height="8" rx="4" fill="#c3d2e8" />
+	<rect x="160" y="292" width="100" height="8" rx="4" fill="#dfe4ed" />
+</svg>

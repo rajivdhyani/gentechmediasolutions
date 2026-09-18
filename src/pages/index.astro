@@ -1,10 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ServiceCard from '../components/ServiceCard.astro';
+import HeroArt from '../components/illustrations/HeroArt.astro';
 
 const services = [
 	{
 		id: 'it',
+		art: 'it' as const,
 		eyebrow: 'IT Solutions',
 		title: 'Infrastructure that scales with you',
 		description:
@@ -13,6 +15,7 @@ const services = [
 	},
 	{
 		id: 'media',
+		art: 'media' as const,
 		eyebrow: 'Media Solutions',
 		title: 'Content and campaigns with a point of view',
 		description:
@@ -21,6 +24,7 @@ const services = [
 	},
 	{
 		id: 'management',
+		art: 'management' as const,
 		eyebrow: 'Management Solutions',
 		title: 'Operational support for growing teams',
 		description:
@@ -39,7 +43,8 @@ const services = [
 			<div class="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-amber-500/20 blur-3xl"></div>
 			<div class="absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-navy-600/40 blur-3xl"></div>
 		</div>
-		<div class="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
+		<div class="relative mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 md:py-28 lg:grid-cols-[1.05fr_1fr] lg:gap-8">
+			<div>
 			<p class="text-sm font-semibold tracking-wide text-amber-400 uppercase">For startups & growing companies</p>
 			<h1 class="mt-4 max-w-3xl font-display text-4xl font-semibold leading-tight text-white md:text-6xl">
 				IT, media, and management — under one roof.
@@ -63,6 +68,9 @@ const services = [
 					Explore services
 				</a>
 			</div>
+			</div>
+
+			<HeroArt class="mx-auto w-full max-w-md lg:max-w-none" />
 		</div>
 	</section>
 
