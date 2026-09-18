@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ServiceCard from '../components/ServiceCard.astro';
+import ServiceArt from '../components/illustrations/ServiceArt.astro';
 
 const services = [
 	{
 		id: 'it',
+		art: 'it' as const,
 		eyebrow: 'IT Solutions',
 		title: 'Infrastructure and support that scales with you',
 		description:
@@ -18,6 +19,7 @@ const services = [
 	},
 	{
 		id: 'media',
+		art: 'media' as const,
 		eyebrow: 'Media Solutions',
 		title: 'Content and campaigns with a clear point of view',
 		description:
@@ -31,6 +33,7 @@ const services = [
 	},
 	{
 		id: 'management',
+		art: 'management' as const,
 		eyebrow: 'Management Solutions',
 		title: 'Operational structure that keeps pace with growth',
 		description:
@@ -65,6 +68,9 @@ const services = [
 					<div id={service.id} class="scroll-mt-24">
 						<p class="text-xs font-semibold tracking-wide text-amber-500 uppercase">{service.eyebrow}</p>
 						<h2 class="mt-2 font-display text-2xl font-semibold text-navy-950">{service.title}</h2>
+						<div class="mt-5 flex items-center justify-center rounded-2xl border border-navy-900/5 bg-gradient-to-b from-mist-100 to-mist-200/60 px-6 py-7">
+							<ServiceArt name={service.art} class="h-24 w-auto" />
+						</div>
 					</div>
 					<div class="rounded-2xl border border-navy-900/10 bg-white p-8">
 						<p class="text-navy-700/80">{service.description}</p>
